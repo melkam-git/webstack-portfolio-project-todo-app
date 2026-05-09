@@ -8,23 +8,15 @@ jobs:
   deploy:
     runs-on: self-hosted
     steps:
-      - name: Deploy to server via SSH
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          script: |
-            cd /var/www/todo-app
-            # Force the local code to match GitHub exactly
-            git fetch origin
-            git reset --hard origin/main
-            
-            # Move into the backend directory where server.js lives
-            cd backend
-            
-            # Install dependencies inside the backend folder
-            npm install
-            
-            # Try to restart; if it's not running, start it
-            pm2 restart todo-app || pm2 start server.js --name "todo-app"
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploying changes
+        run: |
+          cd /var/www/todo-app
+          git fetch origin
+          git reset --hard origin/main
+          
+          cd backend
+          npm install
+          pm2 restart todo-app || pm2 start server.js --name "todo-app"
