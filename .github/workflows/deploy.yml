@@ -16,6 +16,15 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /var/www/todo-app
-            git pull origin main
+            # Force the local code to match GitHub exactly
+            git fetch origin
+            git reset --hard origin/main
+            
+            # Move into the backend directory where server.js lives
+            cd backend
+            
+            # Install dependencies inside the backend folder
             npm install
+            
+            # Try to restart; if it's not running, start it
             pm2 restart todo-app || pm2 start server.js --name "todo-app"
