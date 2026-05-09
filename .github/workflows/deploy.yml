@@ -12,11 +12,16 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploying changes
+
         run: |
           cd /var/www/todo-app
           git fetch origin
           git reset --hard origin/main
           
+          # 1. Enter backend and install/build
           cd backend
           npm install
-          pm2 restart todo-app || pm2 start server.js --name "todo-app"
+          npm run build
+          
+          # 2. Start the compiled file from the 'dist' folder
+          pm2 restart todo-app || pm2 start dist/index.js --name "todo-app"
