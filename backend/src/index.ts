@@ -37,7 +37,7 @@ Database.initialize()
 	.then(async () => {
 		logger.info('database connected')
 		server.listen(3000, () => {
-			logger.info('server started')
+			logger.info('server started - DevOps Pipeline Verified!')
 			routes.forEach(route => {
 				logger.info(`${route.getName()} configured`)
 			})
