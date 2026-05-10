@@ -1,18 +1,27 @@
 name: Deploy to Server
+
 on:
-push:
-branches: [ main ]
+  push:
+    branches: [ main ]
+
 jobs:
-deploy:
-runs-on: ubuntu-latest
-steps:- name: Deploy to server
-uses: appleboy/ssh-action@v0.1.5
-with:
-host: ${{ secrets.SERVER_HOST }}
-username: ${{ secrets.SERVER_USER }}
-key: ${{ secrets.SERVER_SSH_KEY }}
-script: |
-cd /var/www/todo-app
-git pull origin main
-npm install
-pm2 restart todo-app
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploying changes
+
+        run: |
+          cd /var/www/todo-app
+          git fetch origin
+          git reset --hard origin/main
+          
+          # 1. Enter backend and install/build
+          cd backend
+          npm install
+          npm run build
+          
+          # 2. Start the compiled file from the 'dist' folder
+          pm2 restart todo-app || pm2 start dist/index.js --name "todo-app"
